@@ -107,6 +107,13 @@ pub enum StorageConfig {
         /// The name of the s3 bucket to use
         bucket: String,
     },
+    /// A GCS bucket
+    GCS {
+        /// The parameters to connect to GCS
+        params: GCSParams,
+        /// The name of the gcs bucket to use
+        bucket: String,
+    },
 }
 
 impl StorageConfig {
@@ -123,6 +130,13 @@ impl StorageConfig {
                     root: get_var("REGISTRY_S3_ROOT").unwrap_or_default(),
                 },
                 bucket: get_var("REGISTRY_S3_BUCKET")?,
+            },
+            "gcs" | "GCS" => StorageConfig::GCS {
+                params: GCSParams {
+                    service_account_key: get_var("REGISTRY_GCS_SERVICE_ACCOUNT_KEY")?,
+                    root: get_var("REGISTRY_GCS_ROOT").unwrap_or_default(),
+                },
+                bucket: get_var("REGISTRY_GCS_BUCKET")?,
             },
             "" | "fs" | "FS" | "filesystem" | "FileSystem" => StorageConfig::FileSystem,
             _ => panic!("invalid REGISTRY_STORAGE"),
@@ -145,6 +159,15 @@ pub struct S3Params {
     pub secret_key: String,
     /// The prefix to use for the keys
     pub root: String,
+}
+
+/// The GCS parameters
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+pub struct GCSParams {
+    /// The prefix to usex for the keys
+    pub root: String,
+    /// The service account key
+    pub service_account_key: String,
 }
 
 /// The configuration in the index
