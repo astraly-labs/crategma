@@ -78,8 +78,18 @@ impl From<&Configuration> for StorageImpl {
                     .layer(LoggingLayer::default())
                     .finish()
             }
-        };
+            StorageConfig::GCS { params, bucket } => {
+                let builder = opendal::services::Gcs::default()
+                    .bucket(bucket)
+                    .root(&params.root)
+                    .service_account(&params.service_account_key);
 
+                opendal::Operator::new(builder)
+                    .unwrap()
+                    .layer(LoggingLayer::default())
+                    .finish()
+            }
+        };
         StorageImpl { opendal_operator }
     }
 }
