@@ -1,5 +1,5 @@
 ARG BUILD_FLAGS="--release"
-ARG BUILD_TARGET=debug
+ARG BUILD_TARGET=release
 
 
 ## Base image with Rust toolchain and dependencies
@@ -34,7 +34,8 @@ RUN chmod -R go-rwx /home/cratery/.ssh
 FROM base AS builder
 ARG BUILD_FLAGS
 COPY --chown=cratery . /home/cratery/src
-RUN cd /home/cratery/src && cargo +stable build ${BUILD_FLAGS}
+WORKDIR /home/cratery/src
+RUN cargo build ${BUILD_FLAGS}
 
 ## Final target from the base with the application's binary
 FROM base
