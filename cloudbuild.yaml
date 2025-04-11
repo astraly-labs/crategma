@@ -1,0 +1,18 @@
+timeout: 3600s
+
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    id: docker-build-crategma
+    args: [ 'build',
+            '--tag=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/crategma:latest',
+            '--file=Dockerfile',
+            '.' ]
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: docker-push-crategma
+    args: ['push', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO_NAME}/crategma:latest']
+    waitFor: ['docker-build-crategma']
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_32'
